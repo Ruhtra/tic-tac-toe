@@ -1,0 +1,27 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "A project developed in javascript from the game tic tac toe",
+  "main": "src/main.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "jest": "^29.4.1",
+    "nodemon": "^2.0.20"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "dev": "nodemon src/main.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ruhtra/tic-tac-toe.git"
+  },
+  "author": "Ruhtra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ruhtra/tic-tac-toe/issues"
+  },
+  "homepage": "https://github.com/Ruhtra/tic-tac-toe#readme"
+}
