@@ -17,13 +17,17 @@
             position: absolute;
             top: 50%;
             left: 50%;
+
+            width: 100%;
+            aspect-ratio: 1;
+
             transform-origin: center;
-            transform: translate(-50%, -50%) scale(250%);
+            transform: translate(-50%, -50%);
         }
-        #game div:hover:not(.active) {  cursor: pointer; }
         #game div:hover:not(.active) svg.hover {
             display: block;
             opacity: .5;
+            cursor: pointer;
         }
         #game .x {
             stroke: black;
@@ -32,7 +36,7 @@
         }
         #game .circle {
             stroke: black;
-            stroke-width: 10;
+            stroke-width: 8%;
             fill: none;
         }
     </style>
@@ -42,6 +46,7 @@
     <header></header>
     <main>
         <header>
+            <div id="round"></div>
             <div id="score">
                 <div>25</div>
                 <div>3</div>
@@ -51,20 +56,19 @@
         <section id="game">
             <% for (let i = 0; i < 9; i++) { %> 
             <div id="id_<%= i %>" class="">
-                <svg class="x hide" height="100" width="100">
+                <svg class="x hide" viewBox="0 0 100 100">
                     <polygon points="10,10 90,90"/>
                     <polygon points="90,10 10,90"/>
                     Sorry, your browser does not support inline SVG.
                 </svg>
-                <svg class="circle hide" height="100" width="100">
-                    <circle cx="50" cy="50" r="40" /> 
+                <svg class="circle hide" viewBox="0 0 100 100">
+                    <circle cx="50%" cy="50%" r="40%" /> 
                     Sorry, your browser does not support inline SVG.
                 </svg>
             </div>
             <% } %>
         </section>
     </main>
-
     <script src="main.js"></script>
 </body>
 </html>

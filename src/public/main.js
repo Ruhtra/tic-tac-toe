@@ -1,11 +1,23 @@
-player = Number('<%= player %>')
 temp = {1: 'x', 2: 'circle'}
-// gameTemp = [1, 2, 1, 1, null, 2, null, null, null]
+
+function isMyTurn(round, player) {
+    if (round %2 == 0) {
+        if (player == 1) return true
+        else return false
+    }
+
+    if (player == 2) return true
+    else return false
+}
 
 
 class transmitGame {
     constructor() {
         this.socket = new io();
+
+        this.socket.on('updateGame', (game) => {
+            this.loadGame(game)
+        })
     }
 
     insert(pos) {
@@ -22,28 +34,58 @@ class transmitGame {
             })
         })
     }
+    getPlayer() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getPlayer', (res) => {
+                resolve(res)
+            })
+        })
+    }
+    getRound() {
+        return new Promise((resolve, reject) => {
+            this.socket.emit('getRound', (res) => {
+                resolve(res)
+            })
+        })
+    }
 }
 
 class visualGame extends transmitGame {
     constructor() {
-        super()
-        this.game = document.querySelector('section#game') 
+        return (async () => {
+            super()
+            this.player = await this.getPlayer()
+            this.game = document.querySelector('section#game') 
+    
+            // Adicionar função click as divs
+            game.querySelectorAll('div').forEach((e, i) => {
+                e.addEventListener('click', async  () => {
+                    // Refatorar esse code {
+                if (e.getAttribute('class') == 'active') return console.log('não permitido')
+                if (!isMyTurn(await this.getRound(), this.player)) return console.log('não é seu round')
 
-        // Adicionar função click as divs
-        game.querySelectorAll('div').forEach((element, i) => {
-            element.addEventListener('click', () => {
-                if (element.getAttribute('class') == 'active') return console.log('não permitido')
-                
                 this.insert(i)
-                    .then(async () => {
-                        this.loadGame(await this.getGame())
-                    })
+                // }
+                })
             })
-        })
 
-        // Adicionar o hover no simbolo do player
-        document.querySelectorAll('svg.'+temp[player]).forEach(e => {
-            e.setAttribute('class', temp[player]+' hide hover')
+            this.loadGame(await this.getGame())
+
+            return this;
+          })();
+    }
+    addHover() {
+        document.querySelectorAll('svg.'+temp[this.player]).forEach(e => {
+            let string = e.getAttribute('class') + ' hover'
+            e.setAttribute('class', string)
+        })
+    }
+    removeHover() {
+        document.querySelectorAll('svg.'+temp[this.player]).forEach(e => {
+            let string = e.getAttribute('class').split(' ')
+            let newClass = string.filter((e) => e != 'hover').join(' ')
+
+            e.setAttribute('class', newClass)
         })
     }
 
@@ -52,8 +94,20 @@ class visualGame extends transmitGame {
         element.setAttribute('class', 'active')
         element.querySelector('.'+temp[player]).style.display = 'block'
     }
-
     loadGame(game) {
+        // Atualiza o round
+        this.getRound()
+            .then((round) => {
+                if (isMyTurn(round, this.player)) {
+                    document.querySelector('div#round').style.background = 'green'
+                    this.addHover()
+                } else {
+                    document.querySelector('div#round').style.background = 'red'
+                    this.removeHover()
+                }
+            })
+
+        // carrega o game
         game.forEach((e, i) => {
             if (e != null) this.insertElement(e, i)
         })
@@ -61,5 +115,3 @@ class visualGame extends transmitGame {
 }
 
 const connection = new visualGame()
-
-// connection.loadGame(gameTemp)

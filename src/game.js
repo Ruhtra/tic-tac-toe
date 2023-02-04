@@ -2,14 +2,17 @@ const { MoveInvalid } = require('./msgErrors.js')
 const {isNull, copyList} = require('./functions.js')
 
 class Game {
+    #simbols
+    #template
     constructor () {
-        this.simbols = [1, 2]
-        this.template = [
+        this.#simbols = [1, 2]
+        this.#template = [
             null, null, null,
             null, null, null,
             null, null, null
         ]
-        this.game = copyList(this.template)
+        this.game = copyList(this.#template)
+        this.round = 0
     } 
     // Functions
     #transformInMatrix(lista) {
@@ -58,25 +61,26 @@ class Game {
         if (!isNull(this.game[p.pos])) throw new Error(MoveInvalid.occupied)
 
         this.game[p.pos] = p.player
+        this.round += 1
     }
     verify() {
         // Checking rows
         console.log('Checking rows')
         for (let x of this.#transformInMatrix(this.game)) {
-            if (x.every(e => e == this.simbols[0]) || x.every(e => e == this.simbols[1])) return x[0]
+            if (x.every(e => e == this.#simbols[0]) || x.every(e => e == this.#simbols[1])) return x[0]
         }
     
         // Checking columns
         console.log('Checking columns')
         for (let x of this.#invertMatrix()) {
-            if (x.every(e => e == this.simbols[0]) || x.every(e => e == this.simbols[1])) return x[0]
+            if (x.every(e => e == this.#simbols[0]) || x.every(e => e == this.#simbols[1])) return x[0]
         }
     
         // Checking diagonals
         console.log('Checking diagonals')
         let [d1, d2] = this.#getDiagonals()
-        if (d1.every(e => e == this.simbols[0]) || d1.every(e => e == this.simbols[1])) return d1[0]
-        if (d2.every(e => e == this.simbols[0]) || d2.every(e => e == this.simbols[1])) return d2[0]
+        if (d1.every(e => e == this.#simbols[0]) || d1.every(e => e == this.#simbols[1])) return d1[0]
+        if (d2.every(e => e == this.#simbols[0]) || d2.every(e => e == this.#simbols[1])) return d2[0]
     
         // Checking tied
         for (let i of this.#transformInMatrix(this.game)) {
@@ -85,15 +89,16 @@ class Game {
             }
         }
         return 'Tied'
-    
     }
     reset() {
-        this.game =  copyList(this.template)
+        this.game =  copyList(this.#template)
+        this.round = 0
     }
 
     get getTable() { return this.game }
-    get getTemplate() { return this.template }
-    get getSimbols() { return this.simbols }
+    get getTemplate() { return this.#template }
+    get getSimbols() { return this.#simbols }
+    get getRound() { return this.round }
 }
 
 exports.Game = Game
