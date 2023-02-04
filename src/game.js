@@ -5,48 +5,64 @@ class Game {
     constructor () {
         this.simbols = [1, 2]
         this.template = [
-            [null, null, null],
-            [null, null, null],
-            [null, null, null]
+            null, null, null,
+            null, null, null,
+            null, null, null
         ]
         this.game = copyList(this.template)
     } 
     // Functions
+    #transformInMatrix(lista) {
+        let transform = [[], [], []]
+
+        lista.forEach((e, i) => {
+            if (i < 3) {
+                transform[0].push(e)
+            } else if (i < 6) {
+                transform[1].push(e)
+            } else {
+                transform[2].push(e)
+            }
+        })
+
+        return transform
+    }
     #invertMatrix() {
-        var temp = [... this.game]
+        let temp = this.#transformInMatrix([... this.game])
     
-        for (let i = 0; i < this.game.length; i++)  {
-            for (let j = 0; j < this.game[i].length; j++)  {
-                temp[i][j] = this.game[j][i]
+        for (let i = 0; i < temp.length; i++)  {
+            for (let j = 0; j < temp[i].length; j++)  {
+                temp[i][j] = temp[j][i]
             }
         }
         return temp;
     }
     #getDiagonals() {
+        let temp = this.#transformInMatrix([... this.game])
         let d1 = []
         let d2 = []
-        for (let i = 0; i < this.game.length; i++)  {
-            d1.push(this.game[i][i])
+        for (let i = 0; i < temp.length; i++)  {
+            d1.push(temp[i][i])
         }
-        for (let i = this.game.length-1; i >= 0; i--)  {
-            d2.push(this.game[i][Math.abs(i-(this.game.length-1))])
+        for (let i = temp.length-1; i >= 0; i--)  {
+            d2.push(temp[i][Math.abs(i-(temp.length-1))])
         }
     
         return [d1, d2]
     }
 
     insert (p) {
-        if ( (0 > p[0][0] || p[0][0] > 2) || (0 > p[0][1] || p[0][1] > 2) ) {
+        if ( (0 > p.pos || p.pos > 8) ) {
             throw new Error(MoveInvalid.outRange);
         }
-        if (!isNull(this.game[p[0][0]][p[0][1]])) throw new Error(MoveInvalid.occupied)
+        if (!isNull(this.game[p.pos])) throw new Error(MoveInvalid.occupied)
 
-        this.game[p[0][0]][p[0][1]] = p[1]
+        this.game[p.pos] = p.player
     }
     verify() {
         // Checking rows
         console.log('Checking rows')
-        for (let x of this.game) {
+        for (let x of this.#transformInMatrix(this.game)) {
             if (x.every(e => e == this.simbols[0]) || x.every(e => e == this.simbols[1])) return x[0]
         }
     
@@ -63,7 +79,7 @@ class Game {
         if (d2.every(e => e == this.simbols[0]) || d2.every(e => e == this.simbols[1])) return d2[0]
     
         // Checking tied
-        for (let i of this.game) {
+        for (let i of this.#transformInMatrix(this.game)) {
             for (let j of i) {
                 if (isNull(j)) return undefined
             }

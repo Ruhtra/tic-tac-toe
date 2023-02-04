@@ -4,6 +4,9 @@
   "description": "A project developed in javascript from the game tic tac toe",
   "main": "src/main.js",
   "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4"
   },
   "devDependencies": {
     "jest": "^29.4.1",

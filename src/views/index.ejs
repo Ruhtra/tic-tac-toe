@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- <meta http-equiv="refresh" content="3"> -->
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>Tic Tac Toe</title>
+
+    <style>
+        .hide { display: none; }
+        #game svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: center;
+            transform: translate(-50%, -50%) scale(250%);
+        }
+        #game div:hover:not(.active) {  cursor: pointer; }
+        #game div:hover:not(.active) svg.hover {
+            display: block;
+            opacity: .5;
+        }
+        #game .x {
+            stroke: black;
+            stroke-width: 10;
+            stroke-linejoin: round;
+        }
+        #game .circle {
+            stroke: black;
+            stroke-width: 10;
+            fill: none;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <header></header>
+    <main>
+        <header>
+            <div id="score">
+                <div>25</div>
+                <div>3</div>
+            </div>
+            <div id="time">00:00</div>
+        </header>
+        <section id="game">
+            <% for (let i = 0; i < 9; i++) { %> 
+            <div id="id_<%= i %>" class="">
+                <svg class="x hide" height="100" width="100">
+                    <polygon points="10,10 90,90"/>
+                    <polygon points="90,10 10,90"/>
+                    Sorry, your browser does not support inline SVG.
+                </svg>
+                <svg class="circle hide" height="100" width="100">
+                    <circle cx="50" cy="50" r="40" /> 
+                    Sorry, your browser does not support inline SVG.
+                </svg>
+            </div>
+            <% } %>
+        </section>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>
