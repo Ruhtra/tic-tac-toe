@@ -47,8 +47,11 @@ app.use(express.static('src/public'));
     const io = new Server(server);
 
 // Routes
-app.get('/:room', (req, res) => {
+app.get('/game/:room', (req, res) => {
     res.render('./index.ejs')
+})
+app.get('/', (req, res) => {
+    res.render('./login.ejs')
 })
 
 // Socket.io
