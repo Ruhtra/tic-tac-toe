@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A project developed in javascript from the game tic tac toe",
   "main": "src/main.js",
+  "type": "module",
   "dependencies": {
     "ejs": "^3.1.8",
     "express": "^4.18.2",

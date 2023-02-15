@@ -69,6 +69,136 @@
             <% } %>
         </section>
     </main>
-    <script src="/main.js"></script>
+    <script type="module">
+        import Game from './game.js'
+
+        const ts = ['x', 'circle']  // TEMPLATE SIMBOLS { TEMP }
+
+        const game = new Game()
+        const socket = new io()
+        game.gameActive = false
+
+
+        class ListenInput {
+            constructor () {
+                this.inputs = document.querySelectorAll('main section#game > div')
+
+                // Inputs for game
+                this.inputs.forEach((element, index) => {
+                    element.addEventListener('click', (e) => {
+                        console.log(game.gameActive)
+                        if (!game.gameActive) return console.log('Jogo finalizado')
+                        if (element.getAttribute('class') == 'active') return console.log('não permitido')
+
+                        socket.emit('input', index)
+                    })
+                })
+
+                // Reset Game
+                document.querySelector('div#round').addEventListener('click', () => {
+                    socket.emit('reset')
+                })
+
+            }
+        }
+
+        class VisualGame extends ListenInput {
+            constructor () {
+                super()
+                this.block = document.querySelector('main section#game')
+            }
+
+            // refatorar esse código horrorroso {
+                addClass(element, className) {
+                    let string = element.getAttribute('class').split(' ')
+                    let newClass = string.filter((e) => e != className)
+                    newClass.push(className)
+
+                    element.setAttribute('class', newClass.join(' ').trim())
+                }
+                delClass(element, className) {
+                    let string = element.getAttribute('class').split(' ')
+                    let newClass = string.filter((e) => e != className).join(' ')
+
+                    element.setAttribute('class', newClass.trim())
+                }
+
+                addHover(type) {
+                    document.querySelectorAll('svg.'+type).forEach(e => {
+                        this.addClass(e, 'hover')
+                    })
+                }
+                removeHover(type) {
+                    document.querySelectorAll('svg.'+type).forEach(e => {
+                        this.delClass(e, 'hover')
+                    })
+                }
+                
+                visible(id, type) {
+                    // adiciona class active
+                    let block = this.block.querySelector(`div#id_${id}`)
+                    this.addClass(block, 'active')
+                    
+                    // deixa objeto visivel
+                    this.delClass(block.querySelector('svg.'+type), 'hide')
+                }
+                unVisible(id, type) {
+                    // remove class active
+                    let block = this.block.querySelector(`div#id_${id}`)
+                    this.delClass(block, 'active')
+
+                    // esconde o objeto
+                    this.addClass(block.querySelector('svg.'+type), 'hide')
+                }
+            // } 
+
+            loadGame() {
+                // update in hovers
+                if (game.round %2 == 0) {
+                    this.addHover(ts[0])
+                    this.removeHover(ts[1])
+                } else {
+                    this.addHover(ts[1])
+                    this.removeHover(ts[0])
+                }
+
+                // update in game
+                game.game.forEach((e, i) => {
+                    this.unVisible(i, ts[0])
+                    this.unVisible(i, ts[1])
+                    if (e != null) this.visible(i, ts[e-1])
+                })
+            }
+        
+            endGame() {
+                game.game.forEach((e, i) => {
+                    this.removeHover(ts[0])
+                    this.removeHover(ts[1])
+                })
+            }
+        
+        }
+
+        // Sockets
+        socket.on('updateGame', (state) => {
+            game.game = state.game
+            game.round = state.round
+            game.gameActive = state.gameActive
+
+            console.log(game.round)
+
+            visualGame.loadGame()
+            if (!game.gameActive) visualGame.endGame()
+        })
+
+        socket.on('endGame', (stateEndGame) => {
+            console.log('End game')                
+            if (stateEndGame == 'Tied') return console.log('Game is Tied')
+            console.log(`Winner is ${ts[stateEndGame-1]}`)
+        })
+       
+        const visualGame = new VisualGame()
+    </script>
+
 </body>
 </html>

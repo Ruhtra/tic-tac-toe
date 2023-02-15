@@ -1,6 +1,5 @@
-MoveInvalid = {
+export const MoveInvalid = {
     occupied: "Move invalid, occupied position",
     outRange: "Move invalid, out range"
 }
-
-exports.MoveInvalid = MoveInvalid
+export const EndGame = "Finished game"
