@@ -1,117 +1,112 @@
-temp = {1: 'x', 2: 'circle'}
+import Game from './game.js'
+import { ListenInput } from './modules/main/ListenInput.js'
 
-function isMyTurn(round, player) {
-    if (round %2 == 0) {
-        if (player == 1) return true
-        else return false
-    }
+const ts = ['x', 'circle']  // TEMPLATE SIMBOLS { TEMP }
 
-    if (player == 2) return true
-    else return false
-}
+const game = new Game()
+const socket = new io()
 
 
-class transmitGame {
-    constructor() {
-        this.socket = new io();
+class EngineGame {
+    loadGame() {
+        // update in hovers
+        if (game.turn %2 == 0) {
+            this.addHover(ts[0])
+            this.removeHover(ts[1])
+        } else {
+            this.addHover(ts[1])
+            this.removeHover(ts[0])
+        }
 
-        this.socket.on('updateGame', (game) => {
-            this.loadGame(game)
+        // update in game
+        game.game.forEach((e, i) => {
+            this.unVisible(i, ts[0])
+            this.unVisible(i, ts[1])
+            if (e != null) this.visible(i, ts[e-1])
         })
     }
 
-    insert(pos) {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('insert', pos, (res) => {
-                if (res == 'ok') resolve()
-            })
-        })
-    }
-    getGame() {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getTable', (res) => {
-                resolve(res)
-            })
-        })
-    }
-    getPlayer() {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getPlayer', (res) => {
-                resolve(res)
-            })
-        })
-    }
-    getRound() {
-        return new Promise((resolve, reject) => {
-            this.socket.emit('getRound', (res) => {
-                resolve(res)
-            })
+    endGame() {
+        game.game.forEach((e, i) => {
+            this.removeHover(ts[0])
+            this.removeHover(ts[1])
         })
     }
 }
 
-class visualGame extends transmitGame {
-    constructor() {
-        return (async () => {
-            super()
-            this.player = await this.getPlayer()
-            this.game = document.querySelector('section#game') 
+class VisualGame extends EngineGame {
+    constructor () {
+        super()
+        this.block = document.querySelector('main section#game')
+    }
+    addClass(element, className) {
+        let string = element.getAttribute('class').split(' ')
+        let newClass = string.filter((e) => e != className)
+        newClass.push(className)
+
+        element.setAttribute('class', newClass.join(' ').trim())
+    }
+    delClass(element, className) {
+        let string = element.getAttribute('class').split(' ')
+        let newClass = string.filter((e) => e != className).join(' ')
+
+        element.setAttribute('class', newClass.trim())
+    }
+
+    addHover(type) {
+        document.querySelectorAll('svg.'+type).forEach(e => {
+            this.addClass(e, 'hover')
+        })
+    }
+    removeHover(type) {
+        document.querySelectorAll('svg.'+type).forEach(e => {
+            this.delClass(e, 'hover')
+        })
+    }
     
-            // Adicionar função click as divs
-            game.querySelectorAll('div').forEach((e, i) => {
-                e.addEventListener('click', async  () => {
-                    // Refatorar esse code {
-                if (e.getAttribute('class') == 'active') return console.log('não permitido')
-                if (!isMyTurn(await this.getRound(), this.player)) return console.log('não é seu round')
-
-                this.insert(i)
-                // }
-                })
-            })
-
-            this.loadGame(await this.getGame())
-
-            return this;
-          })();
+    visible(id, type) {
+        // adiciona class active
+        let block = this.block.querySelector(`div#id_${id}`)
+        this.addClass(block, 'active')
+        
+        // deixa objeto visivel
+        this.delClass(block.querySelector('svg.'+type), 'hide')
     }
-    addHover() {
-        document.querySelectorAll('svg.'+temp[this.player]).forEach(e => {
-            let string = e.getAttribute('class') + ' hover'
-            e.setAttribute('class', string)
-        })
-    }
-    removeHover() {
-        document.querySelectorAll('svg.'+temp[this.player]).forEach(e => {
-            let string = e.getAttribute('class').split(' ')
-            let newClass = string.filter((e) => e != 'hover').join(' ')
+    unVisible(id, type) {
+        // remove class active
+        let block = this.block.querySelector(`div#id_${id}`)
+        this.delClass(block, 'active')
 
-            e.setAttribute('class', newClass)
-        })
+        // esconde o objeto
+        this.addClass(block.querySelector('svg.'+type), 'hide')
     }
 
-    insertElement(player, position) {
-        let element = this.game.querySelector(`div#id_${position}`)
-        element.setAttribute('class', 'active')
-        element.querySelector('.'+temp[player]).style.display = 'block'
-    }
-    loadGame(game) {
-        // Atualiza o round
-        this.getRound()
-            .then((round) => {
-                if (isMyTurn(round, this.player)) {
-                    document.querySelector('div#round').style.background = 'green'
-                    this.addHover()
-                } else {
-                    document.querySelector('div#round').style.background = 'red'
-                    this.removeHover()
-                }
-            })
-
-        // carrega o game
-        game.forEach((e, i) => {
-            if (e != null) this.insertElement(e, i)
-        })
+    showEndGame(state) {
+        let screen = this.block.querySelector('div#screenEndGame')
+        screen.style.display = 'flex'
+    
+        if (state == 'Tied') return screen.innerHTML = `<div id="tied">Game Tied</div>`
+        state = ts[state-1]
+        screen.innerHTML = `<div id="${state}">Winner is ${state}</div>`
     }
 }
 
-const connection = new visualGame()
+
+const visualGame = new VisualGame()
+new ListenInput(socket, game)
+
+
+// Sockets
+socket.on('updateGame', (state) => {
+    game.game = state.game
+    game.turn = state.turn
+    game.history = state.history
+
+    visualGame.loadGame()
+
+    let currentRound = game.history[game.history.length-1]
+    if (currentRound != undefined) {
+        visualGame.showEndGame(currentRound.winner)
+    }
+    else document.querySelector('section#game div#screenEndGame').style.display = 'none'
+})

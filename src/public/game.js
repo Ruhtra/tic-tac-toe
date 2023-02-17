@@ -15,8 +15,9 @@ class Game {
             null, null, null
         ]
         this.game = copyList(this.#template)
-        this.round = 0
+        this.turn = 0
 
+        this.history = [undefined]
         this.#observers = []
     } 
 
@@ -70,8 +71,8 @@ class Game {
         return [d1, d2]
     }
 
-    // getters
 
+    // methods
     input (pos) {
         if (!this.gameActive) throw new Error(EndGame) 
         if ((0 > pos || pos > 8)) throw new Error(MoveInvalid.outRange)
@@ -80,9 +81,7 @@ class Game {
         let player = this.getPlayer()
 
         this.game[pos] = player
-        this.round += 1
-
-
+        this.turn += 1
 
         this.verify()
         this.#notifyAll({
@@ -108,16 +107,17 @@ class Game {
             if (d1.every(e => e == this.#simbols[0]) || d1.every(e => e == this.#simbols[1])) return d1[0]
             if (d2.every(e => e == this.#simbols[0]) || d2.every(e => e == this.#simbols[1])) return d2[0]
 
-            if (this.round == 9) return 'Tied'
+            if (this.turn == 9) return 'Tied'
         }
 
-        let stateWinner = checking()
-        if (stateWinner) {
+        let stateEndGame = checking()
+        if (stateEndGame) {
             this.gameActive = false
-            this.#notifyAll({
-                type: 'endGame',
-                state: stateWinner 
-            })
+
+            this.history[this.history.length-1] = {
+                // game: copyList(this.game)
+                winner: stateEndGame
+            }
         }
 
         
@@ -125,7 +125,8 @@ class Game {
     reset() {
         this.gameActive = true
         this.game =  copyList(this.#template)
-        this.round = 0
+        this.turn = 0
+        this.history.push(undefined)
 
         this.#notifyAll({
             type: 'resetGame'
@@ -134,14 +135,15 @@ class Game {
 
     getPlayer() {
         let player
-        this.round %2 == 0 ? player = this.#simbols[0] : player = this.#simbols[1]
+        this.turn %2 == 0 ? player = this.#simbols[0] : player = this.#simbols[1]
         return player
     }
 
+    // getters
     get getTable() { return this.game }
     get getTemplate() { return this.#template }
     get getSimbols() { return this.#simbols }
-    get getRound() { return this.round }
+    get getTurn() { return this.turn }
 }
 
 export default Game

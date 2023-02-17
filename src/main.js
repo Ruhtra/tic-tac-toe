@@ -60,12 +60,11 @@ server.listen(PORT, () => {
 const game = new Game()
 const updateGame = () => { return { 
     game: game.getTable,
-    round: game.getRound,
-    gameActive: game.gameActive
+    turn: game.getTurn,
+    history: game.history
 }}
 game.subscribe((command) => {
     if (command.type == 'input') io.emit('updateGame', updateGame())
-    if (command.type == 'endGame') io.emit('endGame', command.state)
     if (command.type == 'resetGame') io.emit('updateGame', updateGame()) 
 
     console.log(`> Emmiting ${command.type}`)

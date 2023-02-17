@@ -86,11 +86,13 @@ html, body {
             }
     /* game */
         main #game {
-            padding:  1vh 2vh 2vh 2vh;
+            position: relative;
 
             display: grid;
             grid-template: repeat(3, 1fr) / repeat(3, 1fr);
             gap: 1vh;
+
+            padding:  1vh 2vh 2vh 2vh;
 
             height: 90%;
             aspect-ratio: 1;
