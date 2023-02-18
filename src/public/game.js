@@ -48,19 +48,21 @@ class Game {
         return transform
     }
     #invertMatrix() {
-        let temp = this.#transformInMatrix([... this.game])
-    
+        let temp = this.#transformInMatrix(this.game)
+        let saveValues = copyList(temp)
+
         for (let i = 0; i < temp.length; i++)  {
             for (let j = 0; j < temp[i].length; j++)  {
-                temp[i][j] = temp[j][i]
+                temp[i][j] = saveValues[j][i]
             }
         }
         return temp;
     }
     #getDiagonals() {
-        let temp = this.#transformInMatrix([... this.game])
+        let temp = this.#transformInMatrix(this.game)
         let d1 = []
         let d2 = []
+        
         for (let i = 0; i < temp.length; i++)  {
             d1.push(temp[i][i])
         }
@@ -144,6 +146,7 @@ class Game {
     get getTemplate() { return this.#template }
     get getSimbols() { return this.#simbols }
     get getTurn() { return this.turn }
+    get lastGame() {return this.history[this.history.length - 1]}
 }
 
 export default Game
