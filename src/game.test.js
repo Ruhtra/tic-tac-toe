@@ -55,82 +55,173 @@ describe("Winners", () => {
     expect(game.lastGame.winner).toBe('Tied')
 	})
 
-  describe("Win by row", () => {
-    test("1", () => {
-      game.input(0) // x
-      game.input(4) // o
-      game.input(1) // x
-      game.input(5) // o
-      game.input(2) // x
-  
-      expect(game.lastGame.winner).toBe(simbols[0])
+  describe("X", () => {
+    describe("Win by row", () => {
+      test("1", () => {
+        game.input(0) // x
+        game.input(4) // o
+        game.input(1) // x
+        game.input(5) // o
+        game.input(2) // x
+    
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
+      test("2", () => {
+        game.input(3) // x
+        game.input(0) // o
+        game.input(4) // x
+        game.input(1) // o
+        game.input(5) // x
+    
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
+      test("3", () => {
+        game.input(6) // x
+        game.input(0) // o
+        game.input(7) // x
+        game.input(1) // o
+        game.input(8) // x
+    
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
     })
-    test("2", () => {
-      game.input(3) // x
-      game.input(0) // o
-      game.input(4) // x
-      game.input(1) // o
-      game.input(5) // x
+    describe("Win by column", () => {
+      test("1", () => {
+        game.input(0) // x
+        game.input(1) // o
+        game.input(3) // x
+        game.input(4) // o
+        game.input(6) // x
   
-      expect(game.lastGame.winner).toBe(simbols[0])
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
+      test("2", () => {
+        game.input(1) // x
+        game.input(0) // o
+        game.input(4) // x
+        game.input(3) // o
+        game.input(7) // x
+  
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
+      test("3", () => {
+        game.input(2) // x
+        game.input(0) // o
+        game.input(5) // x
+        game.input(3) // o
+        game.input(8) // x
+  
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
     })
-    test("3", () => {
-      game.input(6) // x
-      game.input(0) // o
-      game.input(7) // x
-      game.input(1) // o
-      game.input(8) // x
+    describe("win by diagonal", () => {
+      test("1", () => {
+        game.input(0) // x
+        game.input(1) // o
+        game.input(4) // x
+        game.input(2) // o
+        game.input(8) // x
   
-      expect(game.lastGame.winner).toBe(simbols[0])
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
+      test("2", () => {
+        game.input(2) // x
+        game.input(0) // o
+        game.input(4) // x
+        game.input(1) // o
+        game.input(6) // x
+  
+        expect(game.lastGame.winner).toBe(simbols[0])
+      })
     })
   })
-  describe("Win by column", () => {
-    test("1", () => {
-      game.input(0) // x
-      game.input(1) // o
-      game.input(3) // x
-      game.input(4) // o
-      game.input(6) // x
 
-      expect(game.lastGame.winner).toBe(simbols[0])
+  describe("circle", () => {
+    describe("Win by row", () => {
+      test("1", () => {
+        game.input(3) // x
+        game.input(0) // o
+        game.input(4) // x
+        game.input(1) // o
+        game.input(6) // x
+        game.input(2) // o
+    
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
+      test("2", () => {
+        game.input(0) // x
+        game.input(3) // o
+        game.input(1) // x
+        game.input(4) // o
+        game.input(6) // x
+        game.input(5) // o
+    
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
+      test("3", () => {
+        game.input(0) // x
+        game.input(6) // o
+        game.input(1) // x
+        game.input(7) // o
+        game.input(3) // x
+        game.input(8) // o
+    
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
     })
-    test("2", () => {
-      game.input(1) // x
-      game.input(0) // o
-      game.input(4) // x
-      game.input(3) // o
-      game.input(7) // x
+    describe("Win by column", () => {
+      test("1", () => {
+        game.input(1) // x
+        game.input(0) // o
+        game.input(4) // x
+        game.input(3) // o
+        game.input(2) // x
+        game.input(6) // o
+  
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
+      test("2", () => {
+        game.input(0) // x
+        game.input(1) // o
+        game.input(3) // x
+        game.input(4) // o
+        game.input(2) // x
+        game.input(7) // o
+  
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
+      test("3", () => {
+        game.input(0) // x
+        game.input(2) // o
+        game.input(3) // x
+        game.input(5) // o
+        game.input(1) // x
+        game.input(8) // o
 
-      expect(game.lastGame.winner).toBe(simbols[0])
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
     })
-    test("3", () => {
-      game.input(2) // x
-      game.input(0) // o
-      game.input(5) // x
-      game.input(3) // o
-      game.input(8) // x
+    describe("win by diagonal", () => {
+      test("1", () => {
+        game.input(1) // x
+        game.input(0) // o
+        game.input(2) // x
+        game.input(4) // o
+        game.input(3) // x
+        game.input(8) // o
+  
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
+      test("2", () => {
+        game.input(0) // x
+        game.input(2) // o
+        game.input(1) // x
+        game.input(4) // o
+        game.input(3) // x
+        game.input(6) // o
 
-      expect(game.lastGame.winner).toBe(simbols[0])
-    })
-  })
-  describe("win by diagonal", () => {
-    test("1", () => {
-      game.input(0) // x
-      game.input(1) // o
-      game.input(4) // x
-      game.input(2) // o
-      game.input(8) // x
-
-      expect(game.lastGame.winner).toBe(simbols[0])
-    })
-    test("2", () => {
-      game.input(2) // x
-      game.input(0) // o
-      game.input(4) // x
-      game.input(1) // o
-      game.input(6) // x
-
-      expect(game.lastGame.winner).toBe(simbols[0])
+        expect(game.lastGame.winner).toBe(simbols[1])
+      })
     })
   })
 })
