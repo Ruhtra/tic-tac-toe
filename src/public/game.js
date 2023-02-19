@@ -121,8 +121,6 @@ class Game {
                 winner: stateEndGame
             }
         }
-
-        
     }
     reset() {
         this.gameActive = true

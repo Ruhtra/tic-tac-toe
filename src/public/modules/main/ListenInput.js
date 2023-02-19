@@ -5,7 +5,7 @@ export class ListenInput {
         // Inputs for game
         this.inputs.forEach((element, index) => {
             element.addEventListener('click', () => {
-                if (game.history[game.history.length-1] != undefined)
+                if (game.lastGame != undefined)
                     return console.log('Jogo finalizado')
                 if (element.getAttribute('class') == 'active')
                     return console.log('não permitido')
