@@ -11,53 +11,6 @@
 
     <title>Tic Tac Toe</title>
 
-    <style>
-        .hide { display: none; }
-        #game svg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-
-            width: 100%;
-            aspect-ratio: 1;
-
-            transform-origin: center;
-            transform: translate(-50%, -50%);
-        }
-        #game div:hover:not(.active) svg.hover {
-            display: block;
-            opacity: .5;
-            cursor: pointer;
-        }
-        #game .x {
-            stroke: black;
-            stroke-width: 10;
-            stroke-linejoin: round;
-        }
-        #game .circle {
-            stroke: black;
-            stroke-width: 8%;
-            fill: none;
-        }
-        section#game div#screenEndGame {
-            position: absolute;
-            top: 0;
-
-            display: none;
-            justify-content: center;
-            align-items: center;
-
-            width: 100%;
-            height: 100%;
-        
-            background: rgba(0, 0, 0, .5);
-
-            color: white;
-            font-size: 10vh;
-        
-            z-index: 1;
-        }
-    </style>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -69,7 +22,7 @@
                 <div>25</div>
                 <div>3</div>
             </div>
-            <div id="time">00:00</div>
+            <div id="time">45:10</div>
         </header>
         <section id="game">
             <% for (let i = 0; i < 9; i++) { %> 
