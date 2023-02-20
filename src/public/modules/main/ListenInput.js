@@ -7,7 +7,7 @@ export class ListenInput {
             element.addEventListener('click', () => {
                 if (game.lastGame != undefined)
                     return console.log('Jogo finalizado')
-                if (element.getAttribute('class') == 'active')
+                if (element.getAttribute('class').split(' ').indexOf('active') >= 0)
                     return console.log('não permitido')
 
                 socket.emit('input', index)
