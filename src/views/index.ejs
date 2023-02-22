@@ -14,13 +14,13 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <header></header>
+    <section id="leftScreen"> coming soon </section>
     <main>
         <header>
             <div id="round"></div>
             <div id="score">
                 <div>25</div>
-                <div>3</div>
+                <div>3</div> 
             </div>
             <div id="time">45:10</div>
         </header>
@@ -42,6 +42,27 @@
             <div id="screenEndGame"></div>
         </section>
     </main>
+    <section id="rightScreen">
+        <div id="messages">
+            <!-- template -->
+            <div class="message" id="id_1">
+                <span class="name"> PlayerName</span>
+                <div class="text">
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perferendis veniam adipisci vero et, incidunt deserunt similique dignissimos expedita minima numquam ab corporis a officia necessitatibus ullam laborum aperiam modi pariatur?
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis eum voluptas dicta cupiditate reiciendis soluta quis earum, praesentium natus, quae perspiciatis ducimus nihil possimus unde voluptate, eligendi nobis sint officiis?
+                </div>
+            </div>
+            <!-- template -->
+        </div>
+        <div id="input">
+            <input type="text" placeholder="Type here">
+            <div id="btnSend">
+                <svg class="send" viewBox="0 0 30 30">
+                    <path transform="translate(0,-289.0625)" style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 25.5,304.0625 c 0,-1.11962 -1,-1.5 -1,-1.5 l -20,-8 3.60352,8.56055 L 17.5,304.0625 8.10352,305.00195 4.5,313.5625 l 20,-8 c 0,0 1,-0.38038 1,-1.5 z"/>
+                </svg>
+            </div>
+        </div>
+    </section>
     <script type="module" src="main.js"></script>
 
 </body>
