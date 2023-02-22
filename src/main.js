@@ -18,6 +18,31 @@ import { Server } from 'socket.io'
 // Variables
 const PORT = 4000
 
+const messages = new class Messages {
+    constructor() {
+        this.messages = {}
+
+        this.template = (data) => {
+            return {
+                id: data.id,
+                name: data.name,
+                text: data.text
+            }
+        }
+    }
+
+    add(room, data) {
+        if (this.messages[room] == undefined) this.messages[room] = []
+        this.messages[room].push(this.template(data))
+    }
+    get getAll() {
+        return this.messages
+    }
+    getRoom(room) {
+        return this.messages[room]
+    }
+}
+
 const app = express();
 const server = http.createServer(app);
 
@@ -48,6 +73,14 @@ io.on('connection', (socket) => {
         })
         socket.on('reset', () => {
             game.reset()
+        })
+
+
+        // messages
+        socket.on('insertMessage', (data) => {
+            let room = 'room1'
+            messages.add(room, data)
+            console.log(messages.getAll)
         })
 });
 
