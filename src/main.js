@@ -33,7 +33,6 @@ app.use(express.static('src/public'));
     const io = new Server(server);
 
 // Routes
-
 app.get('/', (req, res) => {
     return res.render('index.ejs')
 })
@@ -47,6 +46,7 @@ io.on('connection', (socket) => {
         socket.emit('updateGame', game.updateGame)
         socket.emit('updateMessage', messages.getRoom(room))
 
+        saveRoom.addPlayer(room, socket.id, 'player1')
         
     // Game
     socket.on('input', (id) => { game.input(id) })
@@ -56,18 +56,48 @@ io.on('connection', (socket) => {
     // Message
     socket.on('insertMessage', (data) => {
         data['id'] = randomUUID()
-        data['name'] = 'playerOne' // HARD CODE
+        data['name'] = saveRoom.getPlayer(room, socket.id).name
 
         messages.add(room, data)
 
         io.emit('updateMessage', messages.getRoom(room))
     })
+
+    socket.on("disconnect", () => {
+        saveRoom.delPlayer(room, socket.id)
+        console.log(`A user disconnected: ${socket.id}`)
+    })
 });
 
 // Server
-server.listen(PORT, () => {
-    console.log(` >. Server running in: ${PORT}`)
-})
+server.listen(PORT, () => { console.log(` >. Server running in: ${PORT}`) })
+
+// Room
+const saveRoom = new class saveRoom {
+    #template
+    constructor() {
+        this.rooms = {}
+        this.#template = {
+            players: []
+        }
+    }
+    new(room) {
+        if (this.rooms[room] == undefined) return this.rooms[room] = this.#template
+        console.log('Sala ja criada')
+    }
+    addPlayer(room, id, name) {
+        this.rooms[room].players.push({id, name})
+    }
+    delPlayer(room, id) {
+        let iElement = this.rooms[room].players.findIndex(e => e.id == id)
+        if (iElement >= 0) this.rooms[room].players.splice(iElement, 1)
+    }
+
+    getPlayer(room, id) {
+        return this.rooms[room].players.find(e => e.id == id)
+    }
+}
+saveRoom.new('room1')
 
 // Game
 const game = new Game()
