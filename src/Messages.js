@@ -1,7 +1,7 @@
 export class Messages {
     #observers
     constructor() {
-        this.messages = {}
+        this.messages = []
 
         this.template = (data) => {
             return {
@@ -23,16 +23,13 @@ export class Messages {
         }
     }
 
-    add(room, data) {
-        if (this.messages[room] == undefined) this.messages[room] = []
-        this.messages[room].push(this.template(data))
+    add(data) {
+        this.messages.push(this.template(data))
 
         this.#notifyAll({
-            type: 'add',
-            room: room
+            type: 'add'
         })
     }
 
     get getAll() { return this.messages }
-    getRoom(room) { return this.messages[room] }
 }

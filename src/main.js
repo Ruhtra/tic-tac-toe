@@ -43,14 +43,14 @@ io.on('connection', (socket) => {
     // constructor
         console.log(`A user connected: ${socket.id}`)
         
-        socket.emit('updateGame', game.updateGame)
-        socket.emit('updateMessage', messages.getRoom(room))
+        socket.emit('updateGame', saveRoom.getRoom(room).game.updateGame)
+        socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
 
         saveRoom.addPlayer(room, socket.id, 'player1')
         
     // Game
-    socket.on('input', (id) => { game.input(id) })
-    socket.on('reset', () => { game.reset() })
+    socket.on('input', (id) => { saveRoom.getRoom(room).game.input(id) })
+    socket.on('reset', () => { saveRoom.getRoom(room).game.reset() })
 
 
     // Message
@@ -58,9 +58,9 @@ io.on('connection', (socket) => {
         data['id'] = randomUUID()
         data['name'] = saveRoom.getPlayer(room, socket.id).name
 
-        messages.add(room, data)
+        saveRoom.getRoom(room).messages.add(data)
 
-        io.emit('updateMessage', messages.getRoom(room))
+        io.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
     })
 
     socket.on("disconnect", () => {
@@ -82,8 +82,27 @@ const saveRoom = new class saveRoom {
         }
     }
     new(room) {
-        if (this.rooms[room] == undefined) return this.rooms[room] = this.#template
-        console.log('Sala ja criada')
+        if (this.rooms[room] != undefined) return console.log('Room already exists')
+        this.rooms[room] = this.#template
+
+        // Game
+        this.getRoom(room).game = new Game()
+        let roomgame = this.getRoom(room).game
+        roomgame.subscribe((command) => {
+            if (command.type == 'input') io.emit('updateGame', roomgame.updateGame)
+            if (command.type == 'resetGame') io.emit('updateGame', roomgame.updateGame)
+
+            console.log(`> Emmiting ${command.type}`)
+        })
+
+        // Message
+        this.getRoom(room).messages = new Messages()
+        let roomMessage = this.getRoom(room).game
+        roomMessage.subscribe((command) => {
+            if (command.type == 'add') io.emit('updateMessage', roomMessage.getAll)
+
+            console.log(`> Emmiting ${command.type}`)
+        })
     }
     addPlayer(room, id, name) {
         this.rooms[room].players.push({id, name})
@@ -93,25 +112,7 @@ const saveRoom = new class saveRoom {
         if (iElement >= 0) this.rooms[room].players.splice(iElement, 1)
     }
 
-    getPlayer(room, id) {
-        return this.rooms[room].players.find(e => e.id == id)
-    }
+    getPlayer(room, id) { return this.rooms[room].players.find(e => e.id == id) }
+    getRoom(room) { return this.rooms[room] }
 }
-saveRoom.new('room1')
-
-// Game
-const game = new Game()
-game.subscribe((command) => {
-    if (command.type == 'input') io.emit('updateGame', game.updateGame)
-    if (command.type == 'resetGame') io.emit('updateGame', game.updateGame) 
-
-    console.log(`> Emmiting ${command.type}`)
-})
-
-// Message
-const messages = new Messages()
-messages.subscribe((command) => {
-    if (command.type == 'add') io.emit('updateMessage', messages.getRoom(command.room))
-    
-    console.log(`> Emmiting ${command.type}`)
-})
+saveRoom.new('room1') // HARD CODE
