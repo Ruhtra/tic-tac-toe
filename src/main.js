@@ -5,6 +5,7 @@ import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
 import { randomUUID } from 'crypto'
+import { Messages } from './Messages.js'
 
 // import ngrok from 'ngrok';
 // (async function() {
@@ -78,44 +79,7 @@ game.subscribe((command) => {
 })
 
 // Message
-const messages = new class Messages {
-    #observers
-    constructor() {
-        this.messages = {}
-
-        this.template = (data) => {
-            return {
-                id: data.id,
-                name: data.name,
-                text: data.text
-            }
-        }
-        this.#observers = []
-    }
-
-    // Observer functions
-    subscribe (observerFunction) {
-        this.#observers.push(observerFunction)
-    }
-    #notifyAll (command) {
-        for (const observerFunction of this.#observers) {
-            observerFunction(command)
-        }
-    }
-
-    add(room, data) {
-        if (this.messages[room] == undefined) this.messages[room] = []
-        this.messages[room].push(this.template(data))
-
-        this.#notifyAll({
-            type: 'add',
-            room: room
-        })
-    }
-
-    get getAll() { return this.messages }
-    getRoom(room) { return this.messages[room] }
-}
+const messages = new Messages()
 messages.subscribe((command) => {
     if (command.type == 'add') io.emit('updateMessage', messages.getRoom(command.room))
     
