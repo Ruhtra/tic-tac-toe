@@ -10,10 +10,7 @@ const socket = new io()
 const engineGame = new EngineGame(game)
 new ListenInput(socket, game)
 
-
-const messages = new Messages(socket, document.querySelector('#messages'))
-messages.add({id: 0, name: 'PlayerOne', text: 'Esse é um texto teste parar ser adicionado'})
-messages.add({id: 1, name: 'PlayerTwo', me:true, text: 'Second4'})
+const messages = new Messages(document.querySelector('#messages'), 'playerOne')
 
 // Sockets
 socket.on('updateGame', (state) => {
@@ -22,4 +19,8 @@ socket.on('updateGame', (state) => {
     game.history = state.history
 
     engineGame.loadGame()
+})
+
+socket.on('updateMessage', (listMessages) => {
+    messages.loadMessages(listMessages)
 })

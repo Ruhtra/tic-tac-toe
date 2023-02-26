@@ -145,6 +145,12 @@ class Game {
     get getSimbols() { return this.#simbols }
     get getTurn() { return this.turn }
     get lastGame() {return this.history[this.history.length - 1]}
+
+    get updateGame() { return {
+        game: this.getTable,
+        turn: this.getTurn,
+        history: this.history
+    }}
 }
 
 export default Game

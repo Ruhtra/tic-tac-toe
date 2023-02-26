@@ -159,7 +159,7 @@ body > * {
             }
 
 /* Section - right */
-    #rightScreen {
+    #chat {
         position: relative;
 
         display: grid;
@@ -172,7 +172,7 @@ body > * {
         overflow: hidden;
     }
     /* Messages */
-        #rightScreen #messages {
+        #chat #messages {
             display: flex;
             flex-direction: column-reverse;
             gap: 1vmin;
@@ -189,28 +189,28 @@ body > * {
             overflow-y: scroll;
         }
         /* scroll */
-            #rightScreen #messages::-webkit-scrollbar {
+            #chat #messages::-webkit-scrollbar {
                 width: 1vw;
                 max-width: 12px;
             }
 
-            #rightScreen #messages::-webkit-scrollbar-track {
+            #chat #messages::-webkit-scrollbar-track {
                 background: orange;
             }
 
-            #rightScreen #messages::-webkit-scrollbar-thumb {
+            #chat #messages::-webkit-scrollbar-thumb {
                 background-color: blue;
                 border-radius: 3vmin;
             }
         /* Message */
-            #rightScreen #messages .message {
+            #chat #messages .message {
                 display: flex;
                 flex-direction: column;
 
                 width: 100%;
                 height: auto;
             }
-            #rightScreen #messages .message .name {
+            #chat #messages .message .name {
                 width: fit-content;
 
                 color: white;
@@ -220,7 +220,7 @@ body > * {
                 border-radius: 0 1vmin 0 1vmin;
                 background-color: black;
             }
-            #rightScreen #messages .message .text {    
+            #chat #messages .message .text {    
                 align-self: flex-end;
 
                 width: 99%;
@@ -235,16 +235,16 @@ body > * {
                 background-color: black;
             }
             /* me */
-                #rightScreen #messages .message.me .name {
+                #chat #messages .message.me .name {
                     align-self: flex-end;
                     border-radius: 1vmin 0 1vmin 0;
                 }
-                #rightScreen #messages .message.me .text {
+                #chat #messages .message.me .text {
                     align-self: flex-start;
                     border-radius: 1vmin 0 1vmin 1vmin;
                 }
     /* Input box */
-        #rightScreen #input {
+        #chat #input {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -257,7 +257,7 @@ body > * {
             background-color: red;
         }
         /* Box input */
-            #rightScreen #input input {
+            #chat #input input {
                 width: 100%;
                 height: 100%;
 
@@ -270,7 +270,7 @@ body > * {
                 background-color: coral;
             }
         /* Button send */
-            #rightScreen #input #btnSend {
+            #chat #input #btnSend {
                 position: relative;
                 height: 100%;
                 aspect-ratio: 1;
@@ -278,10 +278,10 @@ body > * {
                 border-radius: 20%;
                 background-color: brown;
             }
-            #rightScreen #input #btnSend:hover {
+            #chat #input #btnSend:hover {
                 cursor: pointer;
             }
-            #rightScreen #input #btnSend svg.send { 
+            #chat #input #btnSend svg.send { 
                 position: absolute;
                 top: 50%;
                 left: 50%;
@@ -302,5 +302,5 @@ body > * {
             grid-template-rows: 1fr 1fr 2fr;
         }
         main section#game { min-height: 100vw; }
-        section#leftScreen, section#rightScreen {  order: 2; }
+        section#leftScreen, section#chat {  order: 2; }
     }

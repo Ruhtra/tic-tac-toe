@@ -1,6 +1,7 @@
 export class ListenInput {
     constructor(socket, game) {
         this.inputs = document.querySelectorAll('main section#game > div.input')
+        this.chat = document.querySelector('#chat')
 
         // Inputs for game
         this.inputs.forEach((element, index) => {
@@ -17,6 +18,14 @@ export class ListenInput {
         // Reset Game
         document.querySelector('div#round').addEventListener('click', () => {
             socket.emit('reset')
+        })
+
+        // Send Message
+        this.chat.querySelector('#btnSend').addEventListener('click', () => {
+            let msg = this.chat.querySelector('#input input').value
+            socket.emit('insertMessage', {
+                text: msg
+            })
         })
     }
 }
