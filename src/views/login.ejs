@@ -182,12 +182,12 @@
 
     
     <script type="Module">
-        import Messages from "/modules/Messages.js";
+        import Messages from "/js/modules/Alerts.js";
         
         
         document.querySelector('input#play').addEventListener('click', (e) => {
             let room = document.querySelector('input#room').value
-            window.location.href = '/game/'+room;
+            window.location.href = '/'+room;
         })
 
     

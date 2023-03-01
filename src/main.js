@@ -34,6 +34,12 @@ app.use(express.static('src/public'));
 
 // Routes
 app.get('/', (req, res) => {
+    return res.render('login.ejs')
+})
+app.get('/:room', (req, res) => {
+    let room = /*req.params.room*/ 'room1'
+    if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room '});
+
     return res.render('index.ejs')
 })
 
@@ -46,10 +52,14 @@ io.on('connection', (socket) => {
         socket.emit('updateGame', saveRoom.getRoom(room).game.updateGame)
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
 
-        saveRoom.addPlayer(room, socket.id, 'player1')
+        saveRoom.addPlayer(room, socket.id, 'player')
         
     // Game
-    socket.on('input', (id) => { saveRoom.getRoom(room).game.input(id) })
+    socket.on('input', (id) => {
+        let iPlayer = saveRoom.getIdPlayer(room, socket.id)
+        if (saveRoom.getRoom(room).game.getTurn %2 != iPlayer) return console.log('Input não é permitido')
+        saveRoom.getRoom(room).game.input(id)
+    })
     socket.on('reset', () => { saveRoom.getRoom(room).game.reset() })
 
 
@@ -113,6 +123,7 @@ const saveRoom = new class saveRoom {
     }
 
     getPlayer(room, id) { return this.rooms[room].players.find(e => e.id == id) }
+    getIdPlayer(romm, id) {return this.rooms[romm].players.findIndex(e => e.id == id)}
     getRoom(room) { return this.rooms[room] }
 }
 saveRoom.new('room1') // HARD CODE
