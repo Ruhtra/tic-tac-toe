@@ -17,6 +17,10 @@ import { Messages } from './Messages.js'
 //   console.log(url)
 // })();
 
+function getRoomUrl(url) {
+    return url.split('/')[4]
+}
+
 // Variables
 const PORT = 4000
 
@@ -36,8 +40,9 @@ app.use(express.static('src/public'));
 app.get('/', (req, res) => {
     return res.render('login.ejs')
 })
-app.get('/:room', (req, res) => {
-    let room = /*req.params.room*/ 'room1'
+app.get('/game/:room', (req, res) => {
+    let room = req.params.room
+    if (saveRoom.getRoom(room) == undefined) saveRoom.new(room)
     if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room '});
 
     return res.render('index.ejs')
@@ -45,14 +50,15 @@ app.get('/:room', (req, res) => {
 
 // Socket.io
 io.on('connection', (socket) => {
-    let room = 'room1' // HARD CODE
     // constructor
         console.log(`A user connected: ${socket.id}`)
         
+        let room = getRoomUrl(socket.handshake.headers.referer)
+        saveRoom.new(room)
+        saveRoom.addPlayer(room, socket.id, 'player')
+        
         socket.emit('updateGame', saveRoom.getRoom(room).game.updateGame)
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
-
-        saveRoom.addPlayer(room, socket.id, 'player')
         
     // Game
     socket.on('input', (id) => {
@@ -74,8 +80,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on("disconnect", () => {
-        saveRoom.delPlayer(room, socket.id)
         console.log(`A user disconnected: ${socket.id}`)
+        saveRoom.delPlayer(room, socket.id)
+
+        if (saveRoom.getRoom(room).players.length <= 0) {
+            saveRoom.del(room)
+        }
     })
 });
 
@@ -114,6 +124,10 @@ const saveRoom = new class saveRoom {
             console.log(`> Emmiting ${command.type}`)
         })
     }
+    del(room) {
+        console.log('delete room') // IMPLEMENT
+    }
+
     addPlayer(room, id, name) {
         this.rooms[room].players.push({id, name})
     }
@@ -126,4 +140,3 @@ const saveRoom = new class saveRoom {
     getIdPlayer(romm, id) {return this.rooms[romm].players.findIndex(e => e.id == id)}
     getRoom(room) { return this.rooms[room] }
 }
-saveRoom.new('room1') // HARD CODE
