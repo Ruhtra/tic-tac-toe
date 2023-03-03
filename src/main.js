@@ -117,7 +117,7 @@ const saveRoom = new class saveRoom {
 
         // Message
         this.getRoom(room).messages = new Messages()
-        let roomMessage = this.getRoom(room).game
+        let roomMessage = this.getRoom(room).messages
         roomMessage.subscribe((command) => {
             if (command.type == 'add') io.emit('updateMessage', roomMessage.getAll)
 
@@ -125,7 +125,7 @@ const saveRoom = new class saveRoom {
         })
     }
     del(room) {
-        console.log('delete room') // IMPLEMENT
+        console.log('delete room'+room) // IMPLEMENT
     }
 
     addPlayer(room, id, name) {
