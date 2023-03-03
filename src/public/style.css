@@ -48,6 +48,18 @@ body > * {
 
                 background-color: white;
             }
+        /* reset */
+            main header #reset {
+                position: absolute;
+                top: 50%;
+                left: 10vmin;
+                transform: translateY(-50%);
+
+                height: 70%;
+                aspect-ratio: 1;
+
+                background-color: rebeccapurple;
+            }
         /* score */
             main header #score {
                 position: absolute;

@@ -16,7 +16,7 @@ export class ListenInput {
         })
 
         // Reset Game
-        document.querySelector('div#round').addEventListener('click', () => {
+        document.querySelector('div#reset').addEventListener('click', () => {
             socket.emit('reset')
         })
 
