@@ -1,12 +1,16 @@
-import Game from './game/game.js'
 import { EngineGame } from './modules/main/EngineGame.js';
 import { ListenInput } from './modules/main/ListenInput.js'
 import { Messages } from './modules/main/Messages.js'
 
+import { getCookie } from './functions.js'
+
+import Game from './game/game.js'
+
+const room = location.pathname.split('/')[2]
 
 const game = new Game()
-const socket = new io()
-const messages = new Messages(document.querySelector('#messages'), 'playerOne')
+const socket = new io('http://localhost:4000', {query: `username=${getCookie('username')}&room=${room}`})
+const messages = new Messages(document.querySelector('#messages'), getCookie('username'))
 
 const engineGame = new EngineGame(game)
 new ListenInput(socket, game)

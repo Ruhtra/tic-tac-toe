@@ -6,6 +6,8 @@ import socketMessage from './modules/sockets/socketMessage.js'
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
+import cors from 'cors'
+import cookieParser from "cookie-parser";
 
 // import ngrok from 'ngrok';
 // (async function() {
@@ -25,6 +27,11 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(express.static('src/public'));
+    // Config cors
+    app.use(cors())
+
+    // Config cookies
+    app.use(cookieParser())
 
     // Config ejs
     app.set('view engine', 'ejs');
@@ -39,8 +46,13 @@ app.use(express.static('src/public'));
     })
     app.get('/game/:room', (req, res) => {
         let room = req.params.room
+        let username = req.cookies.username || undefined
+
+        if (username == undefined) return res.status(401).json({msg: 'Username not found'})
+
         if (saveRoom.getRoom(room) == undefined) return res.render('index.ejs')
         if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room'});
+
         return res.render('index.ejs')  
     })
 
@@ -56,11 +68,13 @@ app.use(express.static('src/public'));
 io.on('connection', (socket) => {
     console.log(`A user connected: ${socket.id}`)
     // constructor
-        let room = socket.handshake.headers.referer.split('/')[4]
+        let room = socket.request._query['room']
+        let username = socket.request._query['username']
+
         socket.join(room)
 
         saveRoom.new(room, io)
-        saveRoom.getRoom(room).addPlayer(socket.id, 'player')
+        saveRoom.getRoom(room).addPlayer(socket.id, username)
 
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
         io.to(room).emit('updateGame', {
@@ -71,7 +85,7 @@ io.on('connection', (socket) => {
         socket.on("disconnect", () => {
             console.log(`A user disconnected: ${socket.id}`)
             saveRoom.getRoom(room).delPlayer(socket.id)
-    
+
             if (saveRoom.getRoom(room).players.length <= 0)  saveRoom.del(room)
         })
     
