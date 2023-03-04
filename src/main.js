@@ -9,15 +9,15 @@ import { Server } from 'socket.io'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
 
-import ngrok from 'ngrok';
-(async function() {
-  const url = await ngrok.connect({
-    proto: 'http',
-    addr: 4000,
-    authtoken: 'cKiDSqqLdMBRTu8VzFVq_2VBGTrwa7M7uN2G4ffmY3'
-    });
-  console.log(url)
-})();
+// import ngrok from 'ngrok';
+// (async function() {
+//   const url = await ngrok.connect({
+//     proto: 'http',
+//     addr: 4000,
+//     authtoken: 'cKiDSqqLdMBRTu8VzFVq_2VBGTrwa7M7uN2G4ffmY3'
+//     });
+//   console.log(url)
+// })();
 
 
 // Variables
