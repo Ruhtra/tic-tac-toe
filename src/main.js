@@ -51,21 +51,24 @@ io.on('connection', (socket) => {
         let room = socket.handshake.headers.referer.split('/')[4]
         socket.join(room)
 
-        saveRoom.new(room)
-        saveRoom.addPlayer(room, socket.id, 'player')
-        
+        saveRoom.new(room, io)
+        saveRoom.getRoom(room).addPlayer(socket.id, 'player')
+
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
-        io.to(room).emit('updateGame', {state: saveRoom.getRoom(room).game.updateGame, players: saveRoom.getIdPlayers(room)})
+        io.to(room).emit('updateGame', {
+            state: saveRoom.getRoom(room).game.updateGame,
+            players: saveRoom.getRoom(room).getIdPlayers()
+        })
 
         socket.on("disconnect", () => {
             console.log(`A user disconnected: ${socket.id}`)
-            saveRoom.delPlayer(room, socket.id)
+            saveRoom.getRoom(room).delPlayer(socket.id)
     
             if (saveRoom.getRoom(room).players.length <= 0)  saveRoom.del(room)
         })
-        
-    socketGame(socket, saveRoom.getRoom(room).game, saveRoom.getIdPlayer(room, socket.id))
-    socketMessage(socket, saveRoom.getRoom(room).messages, saveRoom.getPlayer(room, socket.id).name)
+    
+    socketGame(socket, saveRoom.getRoom(room))
+    socketMessage(socket, saveRoom.getRoom(room))
 });
 
 // Server

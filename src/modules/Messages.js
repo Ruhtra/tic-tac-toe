@@ -1,4 +1,4 @@
-export class Messages {
+export default class Messages {
     #observers
     constructor() {
         this.messages = []
