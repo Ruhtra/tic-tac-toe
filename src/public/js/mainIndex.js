@@ -9,7 +9,7 @@ import Game from './game/game.js'
 const room = location.pathname.split('/')[2]
 
 const game = new Game()
-const socket = new io('http://localhost:4000', {query: `username=${getCookie('username')}&room=${room}`})
+const socket = new io(document.location.origin, {query: `username=${getCookie('username')}&room=${room}`})
 const messages = new Messages(document.querySelector('#messages'), getCookie('username'))
 
 const engineGame = new EngineGame(game)
