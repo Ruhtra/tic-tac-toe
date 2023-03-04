@@ -97,4 +97,4 @@ io.on('connection', (socket) => {
 server.listen(PORT, () => { console.log(` >. Server running in: ${PORT}`) })
 
 // Room
-const saveRoom = new SaveRoom(io)
+const saveRoom = new SaveRoom()
