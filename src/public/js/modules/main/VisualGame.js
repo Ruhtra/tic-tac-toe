@@ -64,8 +64,14 @@ export class VisualGame {
             this.removeHover(ts[1])
         })
     }
-
     clearScreenEndGame() {
         document.querySelector('section#game div#screenEndGame').style.display = 'none'
+    }
+    
+    modifyTurn(myTurn){
+        let blockTurn = document.querySelector('main header div#round')
+
+        if (myTurn) blockTurn.style.background = 'green'
+        else blockTurn.style.background = 'red'
     }
 }

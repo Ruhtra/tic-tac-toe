@@ -57,13 +57,13 @@ io.on('connection', (socket) => {
         saveRoom.new(room)
         saveRoom.addPlayer(room, socket.id, 'player')
         
-        socket.emit('updateGame', saveRoom.getRoom(room).game.updateGame)
+        io.emit('updateGame', {state: saveRoom.getRoom(room).game.updateGame, players: saveRoom.getIdPlayers(room)})
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
-        
+
     // Game
     socket.on('input', (id) => {
         let iPlayer = saveRoom.getIdPlayer(room, socket.id)
-        if (saveRoom.getRoom(room).game.getTurn %2 != iPlayer) return console.log('Input não é permitido')
+        if (saveRoom.getRoom(room).game.getTurn %2 != iPlayer) return console.log('Input não é permitido por esse player')
         saveRoom.getRoom(room).game.input(id)
     })
     socket.on('reset', () => { saveRoom.getRoom(room).game.reset() })
@@ -109,10 +109,10 @@ const saveRoom = new class saveRoom {
         this.getRoom(room).game = new Game()
         let roomgame = this.getRoom(room).game
         roomgame.subscribe((command) => {
-            if (command.type == 'input') io.emit('updateGame', roomgame.updateGame)
-            if (command.type == 'resetGame') io.emit('updateGame', roomgame.updateGame)
+            if (command.type == 'input') io.emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
+            if (command.type == 'resetGame') io.emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
 
-            console.log(`> Emmiting ${command.type}`)
+            console.log(`> Emmiting Game ${command.type}`)
         })
 
         // Message
@@ -121,7 +121,7 @@ const saveRoom = new class saveRoom {
         roomMessage.subscribe((command) => {
             if (command.type == 'add') io.emit('updateMessage', roomMessage.getAll)
 
-            console.log(`> Emmiting ${command.type}`)
+            console.log(`> Emmiting Message ${command.type}`)
         })
     }
     del(room) {
@@ -139,4 +139,5 @@ const saveRoom = new class saveRoom {
     getPlayer(room, id) { return this.rooms[room].players.find(e => e.id == id) }
     getIdPlayer(romm, id) {return this.rooms[romm].players.findIndex(e => e.id == id)}
     getRoom(room) { return this.rooms[room] }
+    getIdPlayers(room) { return this.rooms[room].players.map(e => e.id) }
 }

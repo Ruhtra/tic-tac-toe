@@ -6,19 +6,19 @@ import { Messages } from './modules/main/Messages.js'
 
 const game = new Game()
 const socket = new io()
+const messages = new Messages(document.querySelector('#messages'), 'playerOne')
 
 const engineGame = new EngineGame(game)
 new ListenInput(socket, game)
 
-const messages = new Messages(document.querySelector('#messages'), 'playerOne')
 
 // Sockets
-socket.on('updateGame', (state) => {
+socket.on('updateGame', ({state, players}) => {
     game.game = state.game
     game.turn = state.turn
     game.history = state.history
 
-    engineGame.loadGame()
+    engineGame.loadGame({iPlayer: players.indexOf(socket.id)})
 })
 
 socket.on('updateMessage', (listMessages) => {

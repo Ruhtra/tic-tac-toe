@@ -8,15 +8,11 @@ export class EngineGame extends VisualGame {
         this.game = game
     }
 
-    loadGame() {
+    loadGame(player) {
         // update in hovers
-        if (this.game.turn %2 == 0) {
-            this.addHover(ts[0])
-            this.removeHover(ts[1])
-        } else {
-            this.addHover(ts[1])
-            this.removeHover(ts[0])
-        }
+        this.addHover(ts[player.iPlayer])
+        console.log(player.iPlayer)
+        player.iPlayer == 0 ? this.removeHover(ts[1]) : this.removeHover(ts[0])
 
         // Update in game
         this.game.game.forEach((e, i) => {
@@ -29,5 +25,14 @@ export class EngineGame extends VisualGame {
         let currentRound = this.game.lastGame
         if (currentRound != undefined) this.showEndGame(currentRound.winner)
         else this.clearScreenEndGame()
+
+        // Change Turn
+        if (this.game.getTurn %2 == player.iPlayer) {
+            this.addHover(ts[player.iPlayer])
+            this.modifyTurn(true)
+        } else { 
+            this.modifyTurn(false)
+            this.removeHover(ts[player.iPlayer])
+        }
     }
 }
