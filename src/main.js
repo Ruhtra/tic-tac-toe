@@ -1,10 +1,11 @@
 // Modules
 import SaveRoom from './modules/SaveRoom.js'
+import socketGame from './modules/sockets/socketGame.js'
+import socketMessage from './modules/sockets/socketMessage.js'
 
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
-import { randomUUID } from 'crypto'
 
 // import ngrok from 'ngrok';
 // (async function() {
@@ -16,9 +17,6 @@ import { randomUUID } from 'crypto'
 //   console.log(url)
 // })();
 
-function getRoomUrl(url) {
-    return url.split('/')[4]
-}
 
 // Variables
 const PORT = 4000
@@ -41,22 +39,21 @@ app.get('/', (req, res) => {
 })
 app.get('/game/:room', (req, res) => {
     let room = req.params.room
-    if (saveRoom.getRoom(room) == undefined) saveRoom.new(room)
+    if (saveRoom.getRoom(room) == undefined) return res.render('index.ejs')
     if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room '});
-
-    return res.render('index.ejs')
+    return res.render('index.ejs')  
 })
 
 // Socket.io
 io.on('connection', (socket) => {
+    console.log(`A user connected: ${socket.id}`)
     // constructor
-        console.log(`A user connected: ${socket.id}`)
-        
-        let room = getRoomUrl(socket.handshake.headers.referer)
+        let room = socket.handshake.headers.referer.split('/')[4]
+        socket.join(room)
+
         saveRoom.new(room)
         saveRoom.addPlayer(room, socket.id, 'player')
         
-        socket.join(room)
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
         io.to(room).emit('updateGame', {state: saveRoom.getRoom(room).game.updateGame, players: saveRoom.getIdPlayers(room)})
 
@@ -64,29 +61,11 @@ io.on('connection', (socket) => {
             console.log(`A user disconnected: ${socket.id}`)
             saveRoom.delPlayer(room, socket.id)
     
-            if (saveRoom.getRoom(room).players.length <= 0) {
-                saveRoom.del(room)
-            }
+            if (saveRoom.getRoom(room).players.length <= 0)  saveRoom.del(room)
         })
-
-    // Game
-    socket.on('input', (id) => {
-        let iPlayer = saveRoom.getIdPlayer(room, socket.id)
-        if (saveRoom.getRoom(room).game.getTurn %2 != iPlayer) return console.log('Input não é permitido por esse player')
-        saveRoom.getRoom(room).game.input(id)
-    })
-    socket.on('reset', () => { saveRoom.getRoom(room).game.reset() })
-
-
-    // Message
-    socket.on('insertMessage', (data) => {
-        data['id'] = randomUUID()
-        data['name'] = saveRoom.getPlayer(room, socket.id).name
-
-        saveRoom.getRoom(room).messages.add(data)
-
-        io.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
-    })
+        
+    socketGame(socket, saveRoom.getRoom(room).game, saveRoom.getIdPlayer(room, socket.id))
+    socketMessage(socket, saveRoom.getRoom(room).messages, saveRoom.getPlayer(room, socket.id).name)
 });
 
 // Server

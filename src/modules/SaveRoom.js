@@ -1,5 +1,6 @@
 import Game from '../public/game.js'
 import { Messages } from '../modules/Messages.js'
+import { copyList } from '../public/functions.js'
 
 export default class SaveRoom {
     #template
@@ -12,7 +13,8 @@ export default class SaveRoom {
     }
     new(room) {
         if (this.rooms[room] != undefined) return console.log('Room already exists')
-        this.rooms[room] = this.#template
+        
+        this.rooms[room] = copyList(this.#template)
 
         // Game
         this.getRoom(room).game = new Game()
@@ -46,7 +48,7 @@ export default class SaveRoom {
     }
 
     getPlayer(room, id) { return this.rooms[room].players.find(e => e.id == id) }
-    getIdPlayer(romm, id) {return this.rooms[romm].players.findIndex(e => e.id == id)}
+    getIdPlayer(romm, id) { return this.rooms[romm].players.findIndex(e => e.id == id) }
     getRoom(room) { return this.rooms[room] }
     getIdPlayers(room) { return this.rooms[room].players.map(e => e.id) }
 }
