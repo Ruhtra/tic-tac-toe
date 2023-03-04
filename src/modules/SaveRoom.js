@@ -1,4 +1,4 @@
-import Game from '../public/game.js'
+import Game from '../public/js/game/game.js'
 import Messages from '../modules/Messages.js'
 
 class Room {

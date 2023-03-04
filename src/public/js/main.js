@@ -1,4 +1,4 @@
-import Game from '../game.js'
+import Game from './game/game.js'
 import { EngineGame } from './modules/main/EngineGame.js';
 import { ListenInput } from './modules/main/ListenInput.js'
 import { Messages } from './modules/main/Messages.js'
