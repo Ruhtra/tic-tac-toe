@@ -56,8 +56,18 @@ io.on('connection', (socket) => {
         saveRoom.new(room)
         saveRoom.addPlayer(room, socket.id, 'player')
         
-        io.emit('updateGame', {state: saveRoom.getRoom(room).game.updateGame, players: saveRoom.getIdPlayers(room)})
+        socket.join(room)
         socket.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
+        io.to(room).emit('updateGame', {state: saveRoom.getRoom(room).game.updateGame, players: saveRoom.getIdPlayers(room)})
+
+        socket.on("disconnect", () => {
+            console.log(`A user disconnected: ${socket.id}`)
+            saveRoom.delPlayer(room, socket.id)
+    
+            if (saveRoom.getRoom(room).players.length <= 0) {
+                saveRoom.del(room)
+            }
+        })
 
     // Game
     socket.on('input', (id) => {
@@ -76,15 +86,6 @@ io.on('connection', (socket) => {
         saveRoom.getRoom(room).messages.add(data)
 
         io.emit('updateMessage', saveRoom.getRoom(room).messages.getAll)
-    })
-
-    socket.on("disconnect", () => {
-        console.log(`A user disconnected: ${socket.id}`)
-        saveRoom.delPlayer(room, socket.id)
-
-        if (saveRoom.getRoom(room).players.length <= 0) {
-            saveRoom.del(room)
-        }
     })
 });
 

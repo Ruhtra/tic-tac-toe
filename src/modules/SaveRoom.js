@@ -18,8 +18,8 @@ export default class SaveRoom {
         this.getRoom(room).game = new Game()
         let roomgame = this.getRoom(room).game
         roomgame.subscribe((command) => {
-            if (command.type == 'input') this.io.emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
-            if (command.type == 'resetGame') this.io.emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
+            if (command.type == 'input') this.io.to(room).emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
+            if (command.type == 'resetGame') this.io.to(room).emit('updateGame', {state: roomgame.updateGame, players: this.getIdPlayers(room)})
 
             console.log(`> Emmiting Game ${command.type}`)
         })
@@ -28,7 +28,7 @@ export default class SaveRoom {
         this.getRoom(room).messages = new Messages()
         let roomMessage = this.getRoom(room).messages
         roomMessage.subscribe((command) => {
-            if (command.type == 'add') io.emit('updateMessage', roomMessage.getAll)
+            if (command.type == 'add') this.io.to(room).emit('updateMessage', roomMessage.getAll)
 
             console.log(`> Emmiting Message ${command.type}`)
         })
