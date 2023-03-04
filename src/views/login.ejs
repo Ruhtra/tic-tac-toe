@@ -28,11 +28,11 @@
                 position: absolute;
                 top: 0;
                 left: 0;
-                /* transform: translateX(calc(-50% - 1vw)); */
+                transform: translateX(calc(-50% - 1vw));
 
                 width: 80vw;
                 max-width: 900px;
-                height: 100vh;
+                min-height: min-content;
 
                 z-index: 1;
             }
@@ -64,7 +64,6 @@
 
                     transition: 1s transform;
                 }
-
 
         /* main */
             main {
@@ -149,16 +148,13 @@
                             box-shadow: 0 0 .3vw black inset;
                             cursor: pointer;
                         }
-
-
-
     </style>
 </head>
 <body>
     <header>
         <section id="notifications">
-            <div id="_1"> Esta sala esta lotada </div>
-            <div id="_2"> Esta sala esta extremamente lotada </div>
+            <!-- <div id="_1"> Esta sala esta lotada </div>
+            <div id="_2"> Esta sala esta extremamente lotada </div> -->
         </section>
     </header>
     <main>
@@ -183,14 +179,25 @@
     
     <script type="Module">
         import Messages from "/js/modules/Alerts.js";
-        
-        
-        document.querySelector('input#play').addEventListener('click', (e) => {
-            let room = document.querySelector('input#room').value
-            window.location.href = '/game/'+room;
-        })
 
-    
+        function ok() {
+            let room = document.querySelector('input#room').value
+            if (room.length == 0) return fMessages.insert('Preencha o campo "Room"')
+
+            const request = new Request("/api/verifyFullRoom/"+room);
+            fetch(request)
+                .then((response) => response.json())
+                .then(data => {
+                    if (data.msg == 'Room okay') window.location.href = '/game/'+room;
+                    if (data.msg == 'Busy room') fMessages.insert('Sala lotada')
+                })
+        }
+        
+        document.querySelector('input#play').addEventListener('click', (e) => ok())
+        document.querySelector('input#room').addEventListener('keyup', (e) => {
+            var key = e.which || e.keyCode;
+            if (key == 13) ok()
+        });
 
         const fMessages = new Messages(document.querySelector('header #notifications'))
     </script>

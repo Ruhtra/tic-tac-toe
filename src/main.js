@@ -34,15 +34,23 @@ app.use(express.static('src/public'));
     const io = new Server(server);
 
 // Routes
-app.get('/', (req, res) => {
-    return res.render('login.ejs')
-})
-app.get('/game/:room', (req, res) => {
-    let room = req.params.room
-    if (saveRoom.getRoom(room) == undefined) return res.render('index.ejs')
-    if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room '});
-    return res.render('index.ejs')  
-})
+    app.get('/', (req, res) => {
+        return res.render('login.ejs')
+    })
+    app.get('/game/:room', (req, res) => {
+        let room = req.params.room
+        if (saveRoom.getRoom(room) == undefined) return res.render('index.ejs')
+        if (saveRoom.getRoom(room).players.length >= 2) return res.status(401).json({msg: 'Busy room'});
+        return res.render('index.ejs')  
+    })
+
+    // Api
+    app.use('/api/verifyFullRoom/:room', (req, res) => {
+        let room = req.params.room
+        if (saveRoom.getRoom(room) == undefined) return res.json({msg: 'Room okay'})
+        console.log(saveRoom.getRoom(room).players.length >= 2)
+        saveRoom.getRoom(room).players.length >= 2 ? res.json({msg: 'Busy room'}) : res.json({msg: 'Room okay'})
+    })
 
 // Socket.io
 io.on('connection', (socket) => {
